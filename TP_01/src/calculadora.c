@@ -6,16 +6,23 @@
 #include "calculadora.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "utn_biblioteca.h"
 
 
-void menuCalculadora()
+char menuCalculadora()
 {
+	char opcion;
+	//opcion = 0;
 
-	puts("Menu\n1. Ingresar 1er operando\n2. Ingresar 2do operando");
-	puts("3. Calcular todas las operaciones\n a. Suma\n b. Resta\n c. Division \n d. Multiplicacion\n e. Factoriales");
+	puts("\n=== Menu ===\n1. Ingresar 1er operando\n2. Ingresar 2do operando");
+	puts("3. Calcular todas las operaciones\n a. Suma | b. Resta | c. Division | d. Multiplicacion | e. Factoriales");
 	puts("4. Informar resultados");
 	puts("5. Salir del programa");
 
+	//utn_getInt(&opcion, 1, 5, 0, "Seleccione una opcion: ", "Solo se aceptan opciones del 1 al 5.");
+	utn_getChar(&opcion, 49, 53, 0, "Seleccione una opcion: ", "Solo se aceptan opciones del 1 al 5.");
+
+	return opcion;
 }
 
 

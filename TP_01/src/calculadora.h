@@ -5,11 +5,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "utn_biblioteca.h"
 
 #ifndef CALCULADORA_H_
 #define CALCULADORA_H_
 
-void menuCalculadora();
+char menuCalculadora();
 float calculadora_suma(float numUno, float numDos);
 float calculadora_resta(float numUno, float numDos);
 float calculadora_multiplicacion(float numUno, float numDos);
