@@ -9,18 +9,22 @@
 #include "utn_biblioteca.h"
 
 
-char menuCalculadora()
+/**
+ * \brief Menu de la calculadora
+ * \param numUno Trae el 1er operando del main al menu
+ * \param numDos Trae el 2do operando del main al menu
+ * \return Retorna la opcion elegida por el usuario como un char
+ */
+char menuCalculadora(float numUno, float numDos)
 {
 	char opcion;
-	//opcion = 0;
 
-	puts("\n=== Menu ===\n1. Ingresar 1er operando\n2. Ingresar 2do operando");
-	puts("3. Calcular todas las operaciones\n a. Suma | b. Resta | c. Division | d. Multiplicacion | e. Factoriales");
-	puts("4. Informar resultados");
-	puts("5. Salir del programa");
+	printf("\n=========== MENU ===========\n1. Ingresar 1er operando %.2f\n2. Ingresar 2do operando %.2f\n", numUno, numDos);
+	printf("3. Calcular todas las operaciones\n a. Suma %.2f + %.2f | b. Resta %.2f - %.2f | c. Division %.2f / %.2f | d. Multiplicacion  %.2f * %.2f | e. Factoriales %.2f! y %.2f!\n", numUno, numDos, numUno, numDos, numUno, numDos, numUno, numDos, numUno, numDos);
+	printf("4. Informar resultados\n");
+	printf("5. Salir del programa\n");
 
-	//utn_getInt(&opcion, 1, 5, 0, "Seleccione una opcion: ", "Solo se aceptan opciones del 1 al 5.");
-	utn_getChar(&opcion, 49, 53, 0, "Seleccione una opcion: ", "Solo se aceptan opciones del 1 al 5.");
+	utn_getChar(&opcion, 49, 53, 0, "\nSeleccione una opcion: ", "Solo se aceptan opciones del 1 al 5.");
 
 	return opcion;
 }
@@ -100,17 +104,28 @@ int calculadora_factorial(int* pResultado, float numero)
 	int factorial;
 	int i;
 
-	numeroEntero = (int) numero;
+	numeroEntero = (int) numero; //
 	factorial = 1;
 
-	if (numeroEntero > 0)
+	if(numero == 0.00)
 	{
-		estado = 0; // Se realiza el factorial
-		for (i = 1; i <= numeroEntero; i++)
+		estado = 0; // Se realiza el factorial de cero
+		*pResultado = 1;
+	}
+	else
+	{
+		if (!(numero - numeroEntero))
 		{
-			factorial = factorial * i;
+			if (numeroEntero > 0)
+			{
+				estado = 0; // Se realiza el factorial de enteros positivos
+				for (i = 1; i <= numeroEntero; i++)
+				{
+					factorial = factorial * i;
+				}
+				*pResultado = factorial;
+			}
 		}
-		*pResultado = factorial;
 	}
 	return estado;
 }

@@ -16,74 +16,82 @@
 int main(void) {
 
 	setbuf(stdout, NULL);
-
 	char opcionElegida;
 	float numeroUno, numeroDos;
-	int flagContinuar;
+	int flagContinuar, flagInputNumUno, flagInputNumDos, flagInputs;
 	float suma, resta, multiplicacion, division;
-	int estadoDivision;
-	int estadoFactorialUno, estadoFactorialDos;
+	int estadoDivision, estadoFactorialUno, estadoFactorialDos;
 	int factorialUno, factorialDos;
 
-	printf("===== CALCULADORA =====");
+	numeroUno = 0;
+	numeroDos = 0;
 	flagContinuar = 0;
-	//opcionElegida = 0;
+	flagInputNumUno = -1;
+	flagInputNumDos = -1;
+	flagInputs = -1;
 
+	puts("===== CALCULADORA =====");
 	while (flagContinuar == 0)
 	{
-
-		/*
-		 *  HACER MENU SEPARADO DE LA FUNCION
-		 *  Y OTRA FUNCION QUE SOLO PIDA "Seleccione una opcion" para evitar repeticion
-		 *
-		 *  Validar que hayan ingresado ambas variables para avanzar a opcion 3. Y validar opcion 3 para 4
-		 */
-		opcionElegida = menuCalculadora();
-
+		opcionElegida = menuCalculadora(numeroUno, numeroDos);
 		switch (opcionElegida)
 		{
 			case '1':
-				utn_getFloat(&numeroUno, NUMERO_MIN, NUMERO_MAX, REINTENTOS, "Ingrese el primer numero: ", "Error de ingreso");
+				flagInputNumUno = utn_getFloat(&numeroUno, NUMERO_MIN, NUMERO_MAX, REINTENTOS, "Ingrese el primer numero: ", "Error de ingreso");
 				break;
 			case '2':
-				utn_getFloat(&numeroDos, NUMERO_MIN, NUMERO_MAX, REINTENTOS, "Ingrese el segundo numero: ", "Error de ingreso");
+				flagInputNumDos = utn_getFloat(&numeroDos, NUMERO_MIN, NUMERO_MAX, REINTENTOS, "Ingrese el segundo numero: ", "Error de ingreso");
 				break;
 			case '3':
-				suma = calculadora_suma(numeroUno, numeroDos);
-				resta = calculadora_resta(numeroUno, numeroDos);
-				estadoDivision = calculadora_division(&division, numeroUno, numeroDos);
-				multiplicacion = calculadora_multiplicacion(numeroUno, numeroDos);
-				estadoFactorialUno = calculadora_factorial(&factorialUno, numeroUno);
-				estadoFactorialDos = calculadora_factorial(&factorialDos, numeroDos);
+				if (flagInputNumUno == 0 && flagInputNumDos == 0) // Verifica que el usuario haya ingresado ambos operandos
+				{
+					flagInputs = 0;
+					suma = calculadora_suma(numeroUno, numeroDos);
+					resta = calculadora_resta(numeroUno, numeroDos);
+					estadoDivision = calculadora_division(&division, numeroUno, numeroDos);
+					multiplicacion = calculadora_multiplicacion(numeroUno, numeroDos);
+					estadoFactorialUno = calculadora_factorial(&factorialUno, numeroUno);
+					estadoFactorialDos = calculadora_factorial(&factorialDos, numeroDos);
+					puts("=== CALCULOS EJECUTADOS ===");
+					break;
+				}
+				printf("\nSE NECESITAN LOS 2 OPERANDOS PARA EJECUTAR LA OPCION 3\n");
 				break;
 			case '4':
-				printf("El resultado de %.2f+%.2f es: %.2f\n", numeroUno, numeroDos, suma);
-				printf("El resultado de %.2f-%.2f es: %.2f\n", numeroUno, numeroDos, resta);
-				if (estadoDivision == 0)
+				if (flagInputs == 0)
 				{
-					printf("El resultado de %.2f/%.2f es: %.2f\n", numeroUno, numeroDos, division);
+					puts("====== RESULTADOS ======");
+					printf("El resultado de %.2f + %.2f es: %.2f\n", numeroUno, numeroDos, suma);
+					printf("El resultado de %.2f - %.2f es: %.2f\n", numeroUno, numeroDos, resta);
+					if (estadoDivision == 0) // Validacion de division por cero
+					{
+						printf("El resultado de %.2f / %.2f es: %.2f\n", numeroUno, numeroDos, division);
+					}
+					else
+					{
+						printf("No es posible dividir por cero\n");
+					}
+					printf("El resultado de %.2f * %.2f es: %.2f\n", numeroUno, numeroDos, multiplicacion);
+					if (estadoFactorialUno == 0) // Validacion de 1er factorial de enteros positivos
+					{
+						printf("El factorial de %.2f es: %d\n", numeroUno, factorialUno);
+					}
+					else
+					{
+						printf("%.2f: Solo se puede realizar el factorial de cero y numeros enteros positivos\n", numeroUno);
+					}
+					if (estadoFactorialDos == 0) // Validacion de 2do factorial de enteros positivos
+					{
+						printf("El factorial de %.2f es: %d\n", numeroDos, factorialDos);
+					}
+					else
+					{
+						printf("%.2f: Solo se puede realizar el factorial de cero y numeros enteros positivos\n", numeroDos);
+					}
+					flagInputs = 1; // Modifica el estado para que siempre se tenga que Calcular(Op. 3) para poder Informar (Op. 4)
+					break;
 				}
-				else
-				{
-					printf("No es posible dividir por cero\n");
-				}
-				printf("El resultado de %.2f*%.2f es: %.2f\n", numeroUno, numeroDos, multiplicacion);
-				if (estadoFactorialUno == 0)
-				{
-					printf("El factorial de %.2f es: %d\n", numeroUno, factorialUno);
-				}
-				else
-				{
-					printf("%.2f: Solo se puede realizar el factorial de numeros enteros positivos\n", numeroUno);
-				}
-				if (estadoFactorialDos == 0)
-				{
-					printf("El factorial de %.2f es: %d\n", numeroDos, factorialDos);
-				}
-				else
-				{
-					printf("%.2f: Solo se puede realizar el factorial de numeros enteros positivos\n", numeroDos);
-				}
+				printf("\nNECESITA EJECUTAR LA OPCION 3 PARA TENER RESULTADOS\n");
 				break;
 			case '5':
 				flagContinuar = -1;
