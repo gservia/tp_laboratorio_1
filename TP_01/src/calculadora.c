@@ -15,7 +15,7 @@
  * \param numDos Trae el 2do operando del main al menu
  * \return Retorna la opcion elegida por el usuario como un char
  */
-char menuCalculadora(float numUno, float numDos)
+char calculadora_menu(float numUno, float numDos)
 {
 	char opcion;
 

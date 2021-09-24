@@ -10,7 +10,7 @@
 #ifndef CALCULADORA_H_
 #define CALCULADORA_H_
 
-char menuCalculadora(float numUno, float numDos);
+char calculadora_menu(float numUno, float numDos);
 float calculadora_suma(float numUno, float numDos);
 float calculadora_resta(float numUno, float numDos);
 float calculadora_multiplicacion(float numUno, float numDos);

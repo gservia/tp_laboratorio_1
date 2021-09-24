@@ -2,6 +2,7 @@
  ============================================================================
  Name        : TP_01.c
  Author      : Gabriel Servia
+ Division    : 1° H
  University  : UTN FRA
  ============================================================================
  */
@@ -33,7 +34,7 @@ int main(void) {
 	puts("===== CALCULADORA =====");
 	while (flagContinuar == 0)
 	{
-		opcionElegida = menuCalculadora(numeroUno, numeroDos);
+		opcionElegida = calculadora_menu(numeroUno, numeroDos);
 		switch (opcionElegida)
 		{
 			case '1':
