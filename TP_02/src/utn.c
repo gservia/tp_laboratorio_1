@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "utn.h"
 
 static int getString(char* pCadena, int len);
 static int getText(char* pResultado, int len);
@@ -13,6 +14,8 @@ static int getInt(int* pResultado);
 static int esNumerica(char* cadena, int limite);
 static int esFloat(char* cadena);
 static int getFloat(float* pResultado);
+static int getNombre(char* pResultado, int len);
+static int esNombre(char* cadena,int len);
 
 
 /**
@@ -55,7 +58,7 @@ static int getString(char* pCadena, int len)
  */
 static int getText(char* pResultado, int len)
 {
-    int retorno=-1;
+    int retorno = -1;
     char buffer[4096];
 
     if (pResultado != NULL)
@@ -97,13 +100,13 @@ static int esTexto(char* cadena, int len)
 
 
 /**
- * \brief Solicita una descripcion al usuario, luego de verificarlo devuelve el resultado
+ * \brief Solicita un texto al usuario
  * \param pResultado Puntero al espacio de memoria donde se dejara el resultado de la funcion
  * \param len Es la longitud del array resultado
  * \param mensaje Es el mensaje a ser mostrado
  * \param mensajeError Es el mensaje de Error a ser mostrado
  * \param reintentos Cantidad de reintentos
- * \return Retorna 0 si se obtuvo el numero flotante y -1 si da Error
+ * \return Retorna 0 si se obtuvo exito y -1 si da Error
  */
 int utn_getText(char* pResultado, int len, char* mensaje, char* mensajeError, int reintentos)
 {
@@ -298,3 +301,84 @@ int utn_getFloat(float* pResultado, char* mensaje, char* mensajeError, float min
 	return retorno;
 }
 
+
+/**
+ * \brief Obtiene un string valido como nombre
+ * \param pResultado Puntero al espacio de memoria donde se dejara el resultado de la funcion
+ * \return Retorna 0 (EXITO) si se obtiene un numero flotante y -1 (ERROR) si no
+ *
+ */
+static int getNombre(char* pResultado, int len)
+{
+    int retorno = -1;
+    char buffer[4096];
+
+    if (pResultado != NULL)
+    {
+    	if(	getString(buffer, sizeof(buffer)) == 0 &&
+    		esNombre(buffer, sizeof(buffer)) &&
+			strnlen(buffer, sizeof(buffer)) < len)
+    	{
+    		strncpy(pResultado,buffer, len);
+			retorno = 0;
+		}
+    }
+    return retorno;
+}
+
+/**
+ * \brief Verifica si la cadena ingresada es un nombre valido
+ * \param cadena Cadena de caracteres a ser analizada
+ * \return Retorna 1 (verdadero) si la cadena es valida y 0 (falso) si no lo es
+ *
+ */
+static int esNombre(char* cadena,int len)
+{
+	int i = 0;
+	int retorno = 1;
+
+	if (cadena != NULL && len > 0)
+	{
+		for (i=0 ; cadena[i] != '\0' && i < len; i++)
+		{
+			if ((cadena[i] < 'A' || cadena[i] > 'Z' ) && (cadena[i] < 'a' || cadena[i] > 'z' ))
+			{
+				retorno = 0;
+				break;
+			}
+		}
+	}
+	return retorno;
+}
+
+
+/**
+ * \brief Solicita un nombre al usuario, luego de verificarlo devuelve el resultado
+ * \param pResultado Puntero al espacio de memoria donde se dejara el resultado de la funcion
+ * \param len Es la longitud del array resultado
+ * \param mensaje Es el mensaje a ser mostrado
+ * \param mensajeError Es el mensaje de Error a ser mostrado
+ * \param reintentos Cantidad de reintentos
+ * \return Retorna 0 si se obtuvo el numero flotante y -1 si no
+ *
+ */
+int utn_getName(char* pResultado, int len,char* mensaje, char* mensajeError, int reintentos)
+{
+	char bufferString[4096];
+	int retorno = -1;
+
+	while (reintentos >= 0)
+	{
+		reintentos--;
+		printf("%s", mensaje);
+
+		if (getNombre(bufferString, sizeof(bufferString)) == 0 && strnlen(bufferString, sizeof(bufferString)) < len)
+		{
+			strncpy(pResultado, bufferString, len);
+			retorno = 0;
+			break;
+		}
+		printf("%s", mensajeError);
+	}
+	return retorno;
+}
