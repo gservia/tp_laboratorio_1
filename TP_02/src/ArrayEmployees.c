@@ -11,31 +11,6 @@
 
 static int getNewId(void);
 
-/**
- * \brief Options Menu. Request a option to user
- * \return Return selected option
- */
-char menuEmployees()
-{
-	char option;
-	char optionAux;
-
-	printf("\n=========== MENU ===========\n");
-	printf("1. ALTA de empleado.\n");
-	printf("2. MODIFICAR un empleado.\n");
-	printf("3. BAJA de empleado.\n");
-	printf("4. INFORMES:\n");
-	printf("   A. Lista de empleados ordenados alfabeticamente por Apellido y Sector.\n");
-	printf("   B. Total y promedio de los salarios. Cantidad de empleados que superan el salario promedio.\n");
-	printf("5. Salir del sistema.\n");
-
-	if (utn_getText(&optionAux, 2, "\nINGRESAR UNA OPCION: ", "ERROR: Comando no valido.\n", 0) == 0)
-	{
-		option = optionAux;
-	}
-	return option;
-}
-
 
 /**
  * \brief To indicate that all position in the array are empty
@@ -64,10 +39,10 @@ int initEmployees(Employee* list, int len)
 
 /**
  * \brief Find empty place in array
- * \param
- * \param
- * \param
- * \return
+ * \param int* emptyPlace
+ * \param Employee* list
+ * \param int len
+ * \return int Return (-1) if Error [Invalid length or NULL pointer] - (0) if OK
  */
 int findEmptyPlaceEmployees(int* emptyPlace, Employee* list, int len)
 {
@@ -95,7 +70,7 @@ int findEmptyPlaceEmployees(int* emptyPlace, Employee* list, int len)
  * \param pEmployee Pointer to a Employee struct
  * \return int Return (-1) if Error [Invalid length or NULL pointer or without free space] - (0) if OK
  */
-int addEmployees(Employee* pEmployee)
+int loadEmployeeData(Employee* pEmployee)
 {
 	int state = -1;
 	char nameAux[51];
@@ -105,7 +80,7 @@ int addEmployees(Employee* pEmployee)
 
 	if (pEmployee != NULL)
 	{
-		puts("\nALTA");
+		puts("\nCARGA DE DATOS");
 		if (utn_getName(nameAux, 51, "INGRESAR NOMBRE: ", "ERROR: Solo se aceptan letras en este campo.\n", 0) == 0)
 		{
 			if (utn_getName(lastNameAux, 51, "INGRESAR APELLIDO: ", "ERROR: Solo se aceptan letras en este campo.\n", 0) == 0)
@@ -120,13 +95,42 @@ int addEmployees(Employee* pEmployee)
 						strncpy(pEmployee->lastName, lastNameAux, sizeof(pEmployee->lastName));
 						pEmployee->salary = salaryAux;
 						pEmployee->sector = sectorAux;
-						pEmployee->isEmpty = 0;
 						state = 0;
 					}
 				}
 			}
 		}
 	}
+	return state;
+}
+
+
+/** \brief Add in a existing list of employees the values received as parameters in the first empty position
+ * \param list employee*
+ * \param len int
+ * \param id int
+ * \param name[] char
+ * \param lastName[] char
+ * \param salary float
+ * \param sector int
+ * \return int Return (-1) if Error [Invalid length or NULL pointer or without free space] - (0) if OK
+*/
+int addEmployee(Employee* list, int len, int id, char name[], char lastName[], float salary, int sector)
+{
+	int state = -1;
+	int firstEmptyPlace;
+
+	if (findEmptyPlaceEmployees(&firstEmptyPlace, list, len) == 0)
+	{
+		list[firstEmptyPlace].id = id;
+		strncpy(list[firstEmptyPlace].name, name, sizeof(list[firstEmptyPlace].name));
+		strncpy(list[firstEmptyPlace].lastName, lastName, sizeof(list[firstEmptyPlace].lastName));
+		list[firstEmptyPlace].salary = salary;
+		list[firstEmptyPlace].sector = sector;
+		list[firstEmptyPlace].isEmpty = 0;
+		state = 0;
+	}
+
 	return state;
 }
 
@@ -147,15 +151,15 @@ static int getNewId(void) // Privada del archivo
  * \param len int Array length
  * \return int Return (-1) if Error - (0) if OK
  */
-int printEmployees(Employee* list, int len)
+int printEmployees(Employee* list, int length)
 {
 	int state = -1;
 	int i;
 
-	if (list != NULL && len > 0)
+	if (list != NULL && length > 0)
 	{
 		printf("ID	| APELLIDO		| NOMBRE		| SALARIO		| SECTOR\n");
-		for (i = 0; i < len; i++)
+		for (i = 0; i < length; i++)
 		{
 			if (list[i].isEmpty == 0)
 			{
@@ -176,7 +180,7 @@ int printEmployees(Employee* list, int len)
  * \param id int
  * \return Return employee index position or (-1) if [Invalid length or NULL pointer received or employee not found]
  */
-int findEmployeesById(Employee* list, int len, int idToFind)
+int findEmployeeById(Employee* list, int len, int id)
 {
 	int position = -1;
 	int i;
@@ -185,7 +189,7 @@ int findEmployeesById(Employee* list, int len, int idToFind)
 	{
 		for (i = 0; i < len; i++)
 		{
-			if (list[i].id == idToFind && list[i].isEmpty == 0)
+			if (list[i].id == id && list[i].isEmpty == 0)
 			{
 				position = i;
 				break;
@@ -213,7 +217,7 @@ int editEmployees(Employee* pEmployee)
 
 	flagContinue = 1;
 
-	if (pEmployee != NULL && pEmployee->isEmpty == 1)
+	if (pEmployee != NULL)
 	{
 		puts("\nMODIFICACION");
 
@@ -269,27 +273,30 @@ int editEmployees(Employee* pEmployee)
 
 /**
  * \brief Remove a Employee by Id (put isEmpty Flag in 1)
- * \param pEmployee Pointer to a Employee struct
+ * \param list Employee*
+ * \param len int
+ * \param id int
  * \return int Return (-1) if Error [Invalid length or NULL pointer or if can't find a employee] - (0) if OK
  */
-int removeEmployees(Employee* pEmployee)
+int removeEmployee(Employee* list, int len, int id)
 {
 	int state = -1;
+	int position;
 	int flagContinue;
 
 	flagContinue = 2;
 
-	if (pEmployee != NULL)
-	{
-		puts("\nBAJA");
-		utn_getInt(&flagContinue, "¿Esta seguro que quiere dar de baja a este usuario?\n 1. Si\n 2. No\nSeleccione una opcion: ",
+	position = findEmployeeById(list, len, id);
+
+	puts("\nBAJA");
+	utn_getInt(&flagContinue, "¿Esta seguro que quiere dar de baja a este usuario?\n 1. Si\n 2. No\nSeleccione una opcion: ",
 					"ERROR: Comando no valido", 1, 2, 0);
 
-		if (flagContinue == 1)
-		{
-			pEmployee->isEmpty = 1;
-			state = 0;
-		}
+	if (flagContinue == 1)
+	{
+		list[position].isEmpty = 1;
+		state = 0;
 	}
+
 	return state;
 }

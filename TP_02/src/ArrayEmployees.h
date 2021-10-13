@@ -21,18 +21,18 @@ typedef struct {
 
 int initEmployees(Employee* list, int len);
 
-char menuEmployees();
-
 int findEmptyPlaceEmployees(int* emptyPlace, Employee* list, int len);
 
-int addEmployees(Employee* pEmployee);
+int loadEmployeeData(Employee* pEmployee);
 
-int printEmployees(Employee* list, int len);
+int addEmployee(Employee* list, int len, int id, char name[], char lastName[], float salary, int sector);
 
-int findEmployeesById(Employee* list, int len, int idToFind);
+int printEmployees(Employee* list, int length);
+
+int findEmployeeById(Employee* list, int len, int id);
 
 int editEmployees(Employee* pEmployee);
 
-int removeEmployees(Employee* pEmployee);
+int removeEmployee(Employee* list, int len, int id);
 
 #endif /* ARRAYEMPLOYEES_H_ */

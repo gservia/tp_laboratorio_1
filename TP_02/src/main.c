@@ -11,6 +11,8 @@
 #include <string.h>
 #include "utn.h"
 #include "ArrayEmployees.h"
+#include "menu.h"
+#include "reports.h"
 
 #define EMPLOYEES_LEN 1000  // La nonima bajo ninguna circustancia superara los 1000 empleados
 
@@ -21,28 +23,36 @@ int main(void) {
 	Employee employeeList[EMPLOYEES_LEN]; // Lista de empleados con maximo de 1000 empleados
 	char optionSelected;
 	int flagContinue;
+	int flagEmployeeAdded;
 	int emptyPlace;
 	int idToFind;
 	int lastId;
 	int position;
 
 	flagContinue = 0;
+	flagEmployeeAdded = 0;
 
 	initEmployees(employeeList, EMPLOYEES_LEN);
 
 	puts("=== ADMINISTRACION DE EMPLEADOS ===");
 
 	do {
-		optionSelected = menuEmployees();
+		optionSelected = menu();
 		switch (optionSelected)
 		{
 			case '1':
 				if (findEmptyPlaceEmployees(&emptyPlace, employeeList, EMPLOYEES_LEN) == 0)
 				{
-					if (addEmployees(&employeeList[emptyPlace]) == 0)
+					Employee employeeAux;
+					if (loadEmployeeData(&employeeAux) == 0)
 					{
-						printf("\n=== Alta de empleado satisfatoria ===\n");
-						lastId = employeeList[emptyPlace].id;
+						if (addEmployee(employeeList, EMPLOYEES_LEN, employeeAux.id, employeeAux.name, employeeAux.lastName,
+								employeeAux.salary, employeeAux.sector) == 0)
+						{
+							printf("\n=== Alta de empleado satisfatoria ===\n");
+							lastId = employeeList[emptyPlace].id;
+							flagEmployeeAdded++;
+						}
 					}
 					else
 					{
@@ -55,47 +65,68 @@ int main(void) {
 				}
 				break;
 			case '2':
-				printEmployees(employeeList, EMPLOYEES_LEN);
-
-				if (utn_getInt(&idToFind, "\nINGRESE EL ID QUE DESEA MODIFICAR: ", "ERROR: El ID ingresado no existe.\n", 1, lastId, 0) == 0)
+				if (flagEmployeeAdded > 0)
 				{
-					position = findEmployeesById(employeeList, EMPLOYEES_LEN, idToFind);
-					if (employeeList[position].isEmpty = 0)
+					printEmployees(employeeList, EMPLOYEES_LEN);
+
+					if (utn_getInt(&idToFind, "\nINGRESE EL ID QUE DESEA MODIFICAR: ", "ERROR: El ID ingresado no existe.\n", 1, lastId, 0) == 0)
 					{
-						if (editEmployees(&employeeList[position]) == 0)
+						position = findEmployeeById(employeeList, EMPLOYEES_LEN, idToFind);
+						if (employeeList[position].isEmpty == 0)
 						{
-							printf("\n=== Modificacion de empleado satisfatoria ===\n");
+							if (editEmployees(&employeeList[position]) == 0)
+							{
+								printf("\n=== Modificacion de empleado satisfatoria ===\n");
+							}
+							else
+							{
+								printf("\n=== Error en modificacion de empleado ===\n");
+							}
 						}
 						else
 						{
-							printf("\n=== Error en modificacion de empleado ===\n");
+							printf("\n=== ERROR: El ID ingresado no existe o fue dado de baja ===\n");
 						}
 					}
-					else
-					{
-						printf("\n=== ERROR: El ID ingresado no existe o fue dado de baja ===\n");
-					}
+				}
+				else
+				{
+					printf("\n=== No hay empleados dados de alta ===\n");
 				}
 				break;
 			case '3':
-				printEmployees(employeeList, EMPLOYEES_LEN);
-
-				if (utn_getInt(&idToFind, "\nINGRESE EL ID QUE DESEA DAR DE BAJA: ", "ERROR: El ID ingresado no existe.\n", 1, lastId, 0) == 0)
+				if (flagEmployeeAdded > 0)
 				{
-					position = findEmployeesById(employeeList, EMPLOYEES_LEN, idToFind);
-					if (removeEmployees(&employeeList[position]) == 0)
+					printEmployees(employeeList, EMPLOYEES_LEN);
+
+					if (utn_getInt(&idToFind, "\nINGRESE EL ID QUE DESEA DAR DE BAJA: ", "ERROR: El ID ingresado no existe.\n", 1, lastId, 0) == 0)
 					{
-						printf("\n=== Baja de empleado satisfatoria ===\n");
+						if (removeEmployee(employeeList, EMPLOYEES_LEN, idToFind) == 0)
+						{
+							printf("\n=== Baja de empleado satisfatoria ===\n");
+							flagEmployeeAdded--;
+						}
+						else
+						{
+							printf("\n=== Baja de empleado cancelada ===\n");
+						}
 					}
-					else
-					{
-						printf("\n=== Baja de empleado cancelada ===\n");
-					}
+				}
+				else
+				{
+					printf("\n=== No hay empleados dados de alta ===\n");
 				}
 				break;
 			case '4':
-				printf("Informes.\n");
-				printEmployees(employeeList, EMPLOYEES_LEN);
+				if (flagEmployeeAdded > 0)
+				{
+					printf("Informes.\n");
+					printEmployees(employeeList, EMPLOYEES_LEN);
+				}
+				else
+				{
+					printf("\n=== No hay empleados dados de alta ===\n");
+				}
 				break;
 			case '5':
 				flagContinue = 1;
