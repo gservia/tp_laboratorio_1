@@ -286,16 +286,19 @@ int removeEmployee(Employee* list, int len, int id)
 
 	flagContinue = 2;
 
-	position = findEmployeeById(list, len, id);
-
-	puts("\nBAJA");
-	utn_getInt(&flagContinue, "¿Esta seguro que quiere dar de baja a este usuario?\n 1. Si\n 2. No\nSeleccione una opcion: ",
-					"ERROR: Comando no valido", 1, 2, 0);
-
-	if (flagContinue == 1)
+	if (list != NULL && len > 0)
 	{
-		list[position].isEmpty = 1;
-		state = 0;
+		position = findEmployeeById(list, len, id);
+
+		puts("\nBAJA");
+		utn_getInt(&flagContinue, "¿Esta seguro que quiere dar de baja a este usuario?\n 1. Si\n 2. No\nSeleccione una opcion: ",
+						"ERROR: Comando no valido", 1, 2, 0);
+
+		if (flagContinue == 1)
+		{
+			list[position].isEmpty = 1;
+			state = 0;
+		}
 	}
 
 	return state;

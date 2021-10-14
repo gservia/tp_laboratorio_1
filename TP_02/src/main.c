@@ -43,6 +43,7 @@ int main(void) {
 			case '1':
 				if (findEmptyPlaceEmployees(&emptyPlace, employeeList, EMPLOYEES_LEN) == 0)
 				{
+
 					Employee employeeAux;
 					if (loadEmployeeData(&employeeAux) == 0)
 					{
@@ -58,6 +59,7 @@ int main(void) {
 					{
 						printf("\n=== Error en alta de empleado ===\n");
 					}
+
 				}
 				else
 				{
@@ -120,8 +122,13 @@ int main(void) {
 			case '4':
 				if (flagEmployeeAdded > 0)
 				{
-					printf("Informes.\n");
+					printf("\nINFORMES:\n");
+					printf("\nLISTA DE EMPLEADOS\n");
+					// Criterio 1: Ordena alfabeticamente por apellido de forma descendente y luego por sector:
+					sortEmployees(employeeList, EMPLOYEES_LEN, 1);
 					printEmployees(employeeList, EMPLOYEES_LEN);
+
+					printf("\nTOTAL Y PROMEDIO DE LOS SALARIOS | EMPLEADOS QUE SUPERAN EL SALARIO PROMEDIO\n");
 				}
 				else
 				{
