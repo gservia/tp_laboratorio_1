@@ -28,6 +28,9 @@ int main(void) {
 	int idToFind;
 	int lastId;
 	int position;
+	float totalSalaries;
+	float averageSalary;
+	int qtyEmployeesOverAvgSalary;
 
 	flagContinue = 0;
 	flagEmployeeAdded = 0;
@@ -59,7 +62,6 @@ int main(void) {
 					{
 						printf("\n=== Error en alta de empleado ===\n");
 					}
-
 				}
 				else
 				{
@@ -69,6 +71,8 @@ int main(void) {
 			case '2':
 				if (flagEmployeeAdded > 0)
 				{
+					// Criterio 1: Ordena por ID de forma ascendente:
+					sortById(employeeList, EMPLOYEES_LEN, 1);
 					printEmployees(employeeList, EMPLOYEES_LEN);
 
 					if (utn_getInt(&idToFind, "\nINGRESE EL ID QUE DESEA MODIFICAR: ", "ERROR: El ID ingresado no existe.\n", 1, lastId, 0) == 0)
@@ -99,6 +103,8 @@ int main(void) {
 			case '3':
 				if (flagEmployeeAdded > 0)
 				{
+					// Criterio 1: Ordena por ID de forma ascendente:
+					sortById(employeeList, EMPLOYEES_LEN, 1);
 					printEmployees(employeeList, EMPLOYEES_LEN);
 
 					if (utn_getInt(&idToFind, "\nINGRESE EL ID QUE DESEA DAR DE BAJA: ", "ERROR: El ID ingresado no existe.\n", 1, lastId, 0) == 0)
@@ -128,7 +134,12 @@ int main(void) {
 					sortEmployees(employeeList, EMPLOYEES_LEN, 1);
 					printEmployees(employeeList, EMPLOYEES_LEN);
 
-					printf("\nTOTAL Y PROMEDIO DE LOS SALARIOS | EMPLEADOS QUE SUPERAN EL SALARIO PROMEDIO\n");
+					totalAndAverageSalaries(employeeList, EMPLOYEES_LEN, &totalSalaries, &averageSalary);
+					printf("\nTOTAL DE LOS SALARIOS: $ %.2f\n", totalSalaries);
+					printf("\nPROMEDIO DE LOS SALARIOS: $ %.2f\n", averageSalary);
+
+					employeesOverAvgSalary(employeeList, EMPLOYEES_LEN, &qtyEmployeesOverAvgSalary, averageSalary);
+					printf("\nCANTIDAD DE EMPLEADOS QUE SUPERAN EL SALARIO PROMEDIO: %d\n", qtyEmployeesOverAvgSalary);
 				}
 				else
 				{

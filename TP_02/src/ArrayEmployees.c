@@ -300,6 +300,5 @@ int removeEmployee(Employee* list, int len, int id)
 			state = 0;
 		}
 	}
-
 	return state;
 }
