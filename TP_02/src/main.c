@@ -28,6 +28,7 @@ int main(void) {
 	int idToFind;
 	int lastId;
 	int position;
+	int order;
 	float totalSalaries;
 	float averageSalary;
 	int qtyEmployeesOverAvgSalary;
@@ -129,17 +130,23 @@ int main(void) {
 				if (flagEmployeeAdded > 0)
 				{
 					printf("\nINFORMES:\n");
-					printf("\nLISTA DE EMPLEADOS\n");
-					// Criterio 1: Ordena alfabeticamente por apellido de forma descendente y luego por sector:
-					sortEmployees(employeeList, EMPLOYEES_LEN, 1);
-					printEmployees(employeeList, EMPLOYEES_LEN);
+					if (utn_getInt(&order, "\n¿Que criterio de orden desea en su informe?\n 0. Descendente\n 1. Ascendente\nSeleccione una opcion: ",
+											"ERROR: Comando no valido\n", 0, 1, 0) == 0)
+					{
+						printf("\nLISTA DE EMPLEADOS\n");
+						// Variable order se asigna 0 o 1:
+						// Criterio 0: Ordena alfabeticamente por apellido de forma descendente y luego por sector.
+						// Criterio 1: Ordena alfabeticamente por apellido de forma ascendente y luego por sector.
+						sortEmployees(employeeList, EMPLOYEES_LEN, order);
+						printEmployees(employeeList, EMPLOYEES_LEN);
 
-					totalAndAverageSalaries(employeeList, EMPLOYEES_LEN, &totalSalaries, &averageSalary);
-					printf("\nTOTAL DE LOS SALARIOS: $ %.2f\n", totalSalaries);
-					printf("\nPROMEDIO DE LOS SALARIOS: $ %.2f\n", averageSalary);
+						totalAndAverageSalaries(employeeList, EMPLOYEES_LEN, &totalSalaries, &averageSalary);
+						printf("\nTOTAL DE LOS SALARIOS: $ %.2f\n", totalSalaries);
+						printf("\nPROMEDIO DE LOS SALARIOS: $ %.2f\n", averageSalary);
 
-					employeesOverAvgSalary(employeeList, EMPLOYEES_LEN, &qtyEmployeesOverAvgSalary, averageSalary);
-					printf("\nCANTIDAD DE EMPLEADOS QUE SUPERAN EL SALARIO PROMEDIO: %d\n", qtyEmployeesOverAvgSalary);
+						employeesOverAvgSalary(employeeList, EMPLOYEES_LEN, &qtyEmployeesOverAvgSalary, averageSalary);
+						printf("\nCANTIDAD DE EMPLEADOS QUE SUPERAN EL SALARIO PROMEDIO: %d\n", qtyEmployeesOverAvgSalary);
+					}
 				}
 				else
 				{
