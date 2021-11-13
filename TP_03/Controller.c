@@ -29,7 +29,6 @@ int controller_loadFromText(char* path , LinkedList* pArrayListEmployee)
     return state;
 }
 
-
 /** \brief Carga los datos de los empleados desde el archivo data.csv (modo binario).
  *
  * \param path char*
@@ -64,27 +63,117 @@ int controller_addEmployee(LinkedList* pArrayListEmployee)
 {
 	int state = -1;
 	int idAux;
+	int flagIdLoaded;
 	Employee* pEmployeeAux;
 
 	pEmployeeAux = employee_new();
 
+	flagIdLoaded = -1;
+
 	if (pEmployeeAux != NULL)
 	{
-		printf("ALTA DE EMPLEADO\n");
+		printf("\nALTA DE EMPLEADO\n");
 
-		// Trabajar el ID maximo
-		idAux = 1001;
-
-		if (employee_load(pEmployeeAux) == 0)
+		if (controller_getLastIdFromFile("idMaxInput.csv", &idAux) == 0) // Busca el ultimo ID ingresado al sistema
 		{
-			if (employee_setId(pEmployeeAux, idAux) == 0)
+			flagIdLoaded = 0;
+		}
+		else
+		{
+			if (controller_createIdMaxFile("idMaxInput.csv") == 0) // Si no encuentra archivo de ID, lo crea iniciando en 1001
 			{
-				ll_add(pArrayListEmployee, pEmployeeAux);
-				state = 0;
+				if (controller_getLastIdFromFile("idMaxInput.csv", &idAux) == 0)
+				{
+					flagIdLoaded = 0;
+				}
+			}
+		}
+
+		if (flagIdLoaded == 0)
+		{
+			if (employee_load(pEmployeeAux) == 0)
+			{
+				if (employee_setId(pEmployeeAux, idAux) == 0)
+				{
+					ll_add(pArrayListEmployee, pEmployeeAux);
+					controller_increaseIdMaxInFile("idMaxInput.csv", idAux);
+					state = 0;
+				}
 			}
 		}
 	}
     return state;
+}
+
+/** \brief Aumentar en 1 el ultimo ID creado en archivo
+ *
+ * \param path char*
+ * \param id int
+ * \return Retorna 0 si tuvo exito
+ *
+ */
+int controller_increaseIdMaxInFile(char* path, int id)
+{
+	int state = -1;
+
+	FILE* f = fopen(path, "w");
+
+	if (f != NULL)
+	{
+		id++;
+		fprintf(f, "%d\n", id);
+		fclose(f);
+		state = 0;
+	}
+    return state;
+}
+
+/** \brief Crear archivo en primera ejecucion con ID iniciado en 1001
+ *
+ * \param path char*
+ * \return Retorna 0 si tuvo exito
+ *
+ */
+int controller_createIdMaxFile(char* path)
+{
+	int state = -1;
+
+	FILE* f = fopen(path, "w");
+
+	if (f != NULL)
+	{
+		fprintf(f, "1001\n");
+		fclose(f);
+		state = 0;
+	}
+    return state;
+}
+
+/** \brief Lee el ultimo ID ingresado el sistema
+ *
+ * \param path char*
+ * \param id int*
+ * \return Retorna 0 si tuvo exito
+ *
+ */
+int controller_getLastIdFromFile(char* path, int* id)
+{
+	int state = -1;
+	char idTxt[128];
+
+	// "IdMaxInput.csv"
+	FILE* f = fopen(path, "r");
+
+	if (f != NULL)
+	{
+		if (fscanf(f, "%[^\n]\n", idTxt) == 1)
+		{
+			*id = atoi(idTxt);
+			state = 0;
+		}
+	}
+	fclose(f);
+	return state;
 }
 
 /** \brief Modificar datos de empleado
@@ -103,31 +192,32 @@ int controller_editEmployee(LinkedList* pArrayListEmployee)
 
 	if (pArrayListEmployee != NULL)
 	{
-		controller_ListEmployee(pArrayListEmployee);
-
-		if (utn_getInt(&idToEdit, "\nIngresar el ID del empleado a modificar: ", "Error: comando no valido\n", 1, 999999, 0) == 0)
+		if (controller_ListEmployee(pArrayListEmployee) == 0)
 		{
-			position = employee_findById(pArrayListEmployee, idToEdit);
-			if (position > -1)
+			if (utn_getInt(&idToEdit, "\nIngresar el ID del empleado a modificar: ", "Error: comando no valido\n", 1, 999999, 0) == 0)
 			{
-				pEmployeeAux = ll_get(pArrayListEmployee, position);
-
-				if (pEmployeeAux != NULL)
+				position = employee_findById(pArrayListEmployee, idToEdit);
+				if (position > -1)
 				{
-					if (employee_edit(pEmployeeAux) == 0)
+					pEmployeeAux = ll_get(pArrayListEmployee, position);
+
+					if (pEmployeeAux != NULL)
 					{
-						state = 0;
+						if (employee_edit(pEmployeeAux) == 0)
+						{
+							state = 0;
+						}
 					}
+					else
+					{
+						printf("\n=== ID ingresado inexistente ===\n");
+					}
+
 				}
 				else
 				{
 					printf("\n=== ID ingresado inexistente ===\n");
 				}
-
-			}
-			else
-			{
-				printf("\n=== ID ingresado inexistente ===\n");
 			}
 		}
 	}
@@ -221,12 +311,12 @@ int controller_ListEmployee(LinkedList* pArrayListEmployee)
 					employee_print(pEmployeeAux);
 				}
 			}
+			state = 0;
 		}
 		else
 		{
 			printf("=== No hay elementos en la lista ===\n");
 		}
-		state = 0;
 	}
     return state;
 }
@@ -287,8 +377,6 @@ int controller_saveAsText(char* path , LinkedList* pArrayListEmployee)
 		for(i = 0; i < ll_len(pArrayListEmployee); i++)
 		{
 			pEmployeeAux = ll_get(pArrayListEmployee, i);
-			//8,Henrieta,90,30000
-			//printf("Nombre: %s sueldo:%d\n",pEaux->nombre,pEaux->sueldo);
 			fprintf(f, "%d,%s,%d,%d\n", pEmployeeAux->id, pEmployeeAux->nombre, pEmployeeAux->horasTrabajadas, pEmployeeAux->sueldo);
 		}
 		state = 0;
@@ -308,4 +396,6 @@ int controller_saveAsBinary(char* path , LinkedList* pArrayListEmployee)
 {
     return 1;
 }
+
+
 

@@ -252,7 +252,7 @@ int employee_load(Employee* pEmployee)
 
 	if (utn_getName(nombreAux, NOMBRE_LEN, "Ingresar nombre: ", "Error en la carga del nombre\n", 0) == 0)
 	{
-		if (utn_getInt(&horasTrabajadasAux, "Ingresar cantidad de horas trabajadas: ", "Error en la carga de las horas\n", 0, 999, 0) == 0)
+		if (utn_getInt(&horasTrabajadasAux, "Ingresar cantidad de horas trabajadas: ", "Error en la carga de las horas\n", 0, 99999999, 0) == 0)
 		{
 			if (utn_getInt(&sueldoAux, "Ingresar sueldo: ", "Error en la carga del sueldo\n", 0, 999999999, 0) == 0)
 			{

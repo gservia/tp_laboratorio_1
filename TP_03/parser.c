@@ -19,6 +19,8 @@ int parser_EmployeeFromText(FILE* pFile, LinkedList* pArrayListEmployee)
 	char horasAux[256];
 	char sueldoAux[256];
 
+	if (pFile !=NULL && pArrayListEmployee !=NULL)
+	{
 		fscanf(pFile, "%[^,],%[^,],%[^,],%[^\n]\n", idAux, nombreAux, horasAux, sueldoAux); // Saltea encabezado
 
 		do
@@ -39,6 +41,7 @@ int parser_EmployeeFromText(FILE* pFile, LinkedList* pArrayListEmployee)
 				break;
 			}
 		} while (feof(pFile) == 0);
+	}
 
     return state;
 }

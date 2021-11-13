@@ -28,26 +28,25 @@
     10. Salir
 *****************************************************/
 
-
 int main()
 {
 	setbuf(stdout, NULL);
 
     int option;
     int flagLoadFile;
-
+    int flagLoadOne;
 
     LinkedList* listaEmpleados = ll_newLinkedList();
 
     option = 0;
     flagLoadFile = -1;
+    flagLoadOne = -1;
 
     do {
     	option = menu();
     	switch (option)
         {
             case 1:
-                // "data.csv" | "archivo.txt"
             	if (controller_loadFromText("data.csv", listaEmpleados) == 0)
             	{
             		printf("\n=== Carga de archivo satisfatoria (modo texto) ===\n");
@@ -60,8 +59,7 @@ int main()
                 break;
 
             case 2:
-                // Cargar los datos de los empleados desde el archivo data.csv (modo binario).
-            	if (controller_loadFromBinary("data.txt", listaEmpleados) == 0)
+            	if (controller_loadFromBinary("data.bin", listaEmpleados) == 0)
             	{
             		printf("\n=== Carga de archivo satisfatoria (modo binario) ===\n");
             		flagLoadFile = 0;
@@ -73,25 +71,19 @@ int main()
                 break;
 
             case 3:
-            	if (flagLoadFile == 0)
-            	{
-                	if (controller_addEmployee(listaEmpleados) == 0)
-                	{
-                		printf("\n=== Alta de empleado satisfatoria ===\n");
-                	}
-                	else
-                	{
-                		printf("\n=== Error al dar de alta ===\n");
-                	}
-            	}
-            	else
-            	{
-            		printf("\n=== No se han cargado datos en sistema. Seleccione la opcion 1 primero. ===\n");
-            	}
+            	if (controller_addEmployee(listaEmpleados) == 0)
+                {
+                	printf("\n=== Alta de empleado satisfatoria ===\n");
+                	flagLoadOne = 0;
+                }
+                else
+                {
+                	printf("\n=== Error al dar de alta ===\n");
+                }
                 break;
 
             case 4:
-            	if (flagLoadFile == 0)
+            	if (flagLoadFile == 0 || flagLoadOne == 0)
             	{
                 	if (controller_editEmployee(listaEmpleados) == 0)
                 	{
@@ -109,7 +101,7 @@ int main()
                 break;
 
             case 5:
-            	if (flagLoadFile == 0)
+            	if (flagLoadFile == 0 || flagLoadOne == 0)
             	{
                 	if (controller_removeEmployee(listaEmpleados) == 0)
                 	{
@@ -122,23 +114,30 @@ int main()
             	}
             	else
             	{
-            		printf("\n=== No se han cargado datos en sistema. Seleccione la opcion 1 primero. ===\n");
+            		printf("\n=== No se han cargado datos en sistema. ===\n");
             	}
                 break;
 
             case 6:
-            	if (controller_ListEmployee(listaEmpleados) == 0)
+            	if (flagLoadFile == 0 || flagLoadOne == 0)
             	{
-            		printf("\n=== Listado de empleados satisfactorio ===\n");
+                	if (controller_ListEmployee(listaEmpleados) == 0)
+                	{
+                		printf("\n=== Listado de empleados satisfactorio ===\n");
+                	}
+                	else
+                	{
+                		printf("\n=== Algo salio mal. No es posible listar los empleados ===\n");
+                	}
             	}
             	else
             	{
-            		printf("\n=== Algo salio mal. No es posible listar los empleados ===\n");
+            		printf("\n=== No se han cargado datos en sistema. ===\n");
             	}
                 break;
 
             case 7:
-            	if (flagLoadFile == 0)
+            	if (flagLoadFile == 0 || flagLoadOne == 0)
             	{
                 	if (controller_sortEmployee(listaEmpleados) == 0)
                 	{
@@ -156,13 +155,20 @@ int main()
                 break;
 
             case 8:
-            	if (controller_saveAsText("dataGenerated.csv", listaEmpleados) == 0)
+            	if (flagLoadFile == 0)
             	{
-            		printf("\n=== Archivo guardado con exito (modo texto) ===\n");
+                	if (controller_saveAsText("data.csv", listaEmpleados) == 0)
+                	{
+                		printf("\n=== Archivo guardado con exito (modo texto) ===\n");
+                	}
+                	else
+                	{
+                		printf("\n=== Error al guardar (modo texto) ===\n");
+                	}
             	}
             	else
             	{
-            		printf("\n=== Error al guardar (modo texto) ===\n");
+            		printf("\n=== No se han cargado el archivo en sistema. Seleccione la opcion 1 primero. ===\n");
             	}
                 break;
 
@@ -171,15 +177,15 @@ int main()
                 break;
 
             case 10:
-            	// Finaliza el programa
+            	printf("\nSaliendo...\n");
             	break;
 
             default:
-            	printf("Elija opcion de 1 a 10\n");
+            	printf("\n== Elija una opcion de 1 a 10 ==\n");
             	break;
         }
     }while (option != 10);
 
-    puts("\n=== PROGRAMA FINALIZADO ===");
+    puts("\n=== PROGRAMA FINALIZADO ===\n");
     return 0;
 }
