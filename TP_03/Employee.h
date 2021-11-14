@@ -36,13 +36,9 @@ int employee_setSueldo(Employee* this, int sueldo);
 int employee_getSueldo(Employee* this, int* sueldo);
 
 int employee_findById(LinkedList* listEmployee, int id);
-
 int employee_load(Employee* pEmployee);
-
 int employee_edit(Employee* pEmployee);
-
 int employee_print(Employee* pEmployee);
-
 int employee_compare(void* pEmployeeA, void* pEmployeeB);
 
 #endif // employee_H_INCLUDED

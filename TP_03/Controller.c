@@ -39,15 +39,19 @@ int controller_loadFromText(char* path , LinkedList* pArrayListEmployee)
 int controller_loadFromBinary(char* path , LinkedList* pArrayListEmployee)
 {
 	int state = -1;
-	FILE* f = fopen(path, "rb");
 
-	if (f != NULL)
+	if (path != NULL && pArrayListEmployee != NULL)
 	{
-		if (parser_EmployeeFromBinary(f, pArrayListEmployee) == 0)
+		FILE* f = fopen(path, "r+b");
+
+		if (f != NULL)
 		{
-			state = 0;
+			if (parser_EmployeeFromBinary(f, pArrayListEmployee) == 0)
+			{
+				state = 0;
+			}
+			fclose(f);
 		}
-		fclose(f);
 	}
     return state;
 }
@@ -366,6 +370,10 @@ int controller_saveAsText(char* path , LinkedList* pArrayListEmployee)
 {
 	int state = -1;
 	int i;
+	int idAux;
+	char nombreAux[128];
+	int horasTrabajadasAux;
+	int sueldoAux;
 	Employee* pEmployeeAux;
 
 	FILE* f = fopen(path, "w");
@@ -377,7 +385,13 @@ int controller_saveAsText(char* path , LinkedList* pArrayListEmployee)
 		for(i = 0; i < ll_len(pArrayListEmployee); i++)
 		{
 			pEmployeeAux = ll_get(pArrayListEmployee, i);
-			fprintf(f, "%d,%s,%d,%d\n", pEmployeeAux->id, pEmployeeAux->nombre, pEmployeeAux->horasTrabajadas, pEmployeeAux->sueldo);
+
+			employee_getId(pEmployeeAux,&idAux);
+			employee_getNombre(pEmployeeAux,nombreAux);
+			employee_getHorasTrabajadas(pEmployeeAux,&horasTrabajadasAux);
+			employee_getSueldo(pEmployeeAux,&sueldoAux);
+
+			fprintf(f, "%d,%s,%d,%d\n", idAux, nombreAux, horasTrabajadasAux, sueldoAux);
 		}
 		state = 0;
 		fclose(f);
@@ -394,7 +408,27 @@ int controller_saveAsText(char* path , LinkedList* pArrayListEmployee)
  */
 int controller_saveAsBinary(char* path , LinkedList* pArrayListEmployee)
 {
-    return 1;
+	int state = -1;
+	int i;
+	Employee* pEmployeeAux;
+
+	FILE* f = fopen(path, "w+b");
+
+	if (f != NULL)
+	{
+		for(i = 0; i < ll_len(pArrayListEmployee); i++)
+		{
+			pEmployeeAux = (Employee*) ll_get(pArrayListEmployee, i);
+
+			if (pEmployeeAux != NULL)
+			{
+				fwrite(pEmployeeAux, sizeof(Employee), 1, f);
+			}
+		}
+		state = 0;
+		fclose(f);
+	}
+	return state;
 }
 
 
